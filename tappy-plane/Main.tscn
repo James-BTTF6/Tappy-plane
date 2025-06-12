@@ -1,0 +1,206 @@
+[gd_scene load_steps=20 format=3 uid="uid://bljy6uexcunff"]
+
+[ext_resource type="Texture2D" uid="uid://cj8ak4wqa6lth" path="res://Assets-TappyPlane/Background.png" id="1_glv2v"]
+[ext_resource type="Script" uid="uid://b0dflrwk71a0m" path="res://Main.gd" id="1_r0du0"]
+[ext_resource type="Script" uid="uid://b7foddh6o32qt" path="res://Background.gd" id="1_uu6xs"]
+[ext_resource type="Script" uid="uid://bukgit27hx84w" path="res://player.gd" id="5_3dxm6"]
+[ext_resource type="Texture2D" uid="uid://bs8ux5esbcnoo" path="res://Assets-TappyPlane/Player.png" id="5_fos0i"]
+[ext_resource type="FontFile" uid="uid://kes8m7xhon5w" path="res://Assets-TappyPlane/kenvector_future.ttf" id="7_lgr22"]
+[ext_resource type="PackedScene" uid="uid://bksnugp6thr1f" path="res://Coin.tscn" id="8_03owx"]
+[ext_resource type="PackedScene" uid="uid://eiu8q5c1mi3v" path="res://Obstacle.tscn" id="8_trn2v"]
+[ext_resource type="Texture2D" uid="uid://dxcplyi7rn51t" path="res://Assets-TappyPlane/Circle.png" id="8_wkp8b"]
+[ext_resource type="Script" uid="uid://djvugtjc8rh8v" path="res://game_over.gd" id="9_03owx"]
+[ext_resource type="AudioStream" uid="uid://dug4w0wxy07wk" path="res://Assets-TappyPlane/CoinCollected.ogg" id="9_5vvyt"]
+[ext_resource type="AudioStream" uid="uid://b4oxfcy7lsevn" path="res://Assets-TappyPlane/GameOver.ogg" id="10_c6i3y"]
+[ext_resource type="AudioStream" uid="uid://cn1f3uv7sajex" path="res://Assets-TappyPlane/Music.wav" id="13_c6i3y"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3dxm6"]
+radius = 46.5296
+
+[sub_resource type="Curve" id="Curve_20pc6"]
+_data = [Vector2(0.0206422, 0.991051), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lgr22"]
+size = Vector2(1600, 52.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_trn2v"]
+size = Vector2(1600, 52.5)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_trn2v"]
+bg_color = Color(0.0139285, 0.104404, 0.0800293, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_03owx"]
+bg_color = Color(0.262391, 0.693152, 0.491556, 1)
+
+[node name="Main" type="Node"]
+script = ExtResource("1_r0du0")
+obstacle = ExtResource("8_trn2v")
+coin = ExtResource("8_03owx")
+
+[node name="SpawnerTimer" type="Timer" parent="."]
+wait_time = 0.75
+autostart = true
+
+[node name="CoinTimer" type="Timer" parent="."]
+wait_time = 1.125
+autostart = true
+
+[node name="Node2D" type="Node2D" parent="." groups=["DynamicObject"]]
+position = Vector2(0, 480)
+scale = Vector2(2, 2)
+script = ExtResource("1_uu6xs")
+
+[node name="Background" type="Sprite2D" parent="Node2D"]
+position = Vector2(400, 0)
+texture = ExtResource("1_glv2v")
+
+[node name="Background2" type="Sprite2D" parent="Node2D"]
+position = Vector2(1200, 0)
+texture = ExtResource("1_glv2v")
+
+[node name="Player" type="RigidBody2D" parent="." groups=["Player"]]
+position = Vector2(171, 480)
+mass = 2.2
+gravity_scale = 2.0
+continuous_cd = 1
+contact_monitor = true
+max_contacts_reported = 10
+script = ExtResource("5_3dxm6")
+
+[node name="Sprite2D" type="Sprite2D" parent="Player"]
+texture = ExtResource("5_fos0i")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+visible = false
+shape = SubResource("CircleShape2D_3dxm6")
+
+[node name="CPUParticles2D" type="CPUParticles2D" parent="Player"]
+position = Vector2(-47, -12)
+amount = 25
+texture = ExtResource("8_wkp8b")
+lifetime = 0.4
+spread = 180.0
+gravity = Vector2(-2500, 0)
+initial_velocity_max = 200.0
+scale_amount_min = 0.5
+scale_amount_max = 0.5
+scale_amount_curve = SubResource("Curve_20pc6")
+color = Color(0.823529, 0.262745, 0.262745, 1)
+
+[node name="CoinCollected" type="AudioStreamPlayer" parent="Player"]
+stream = ExtResource("9_5vvyt")
+
+[node name="GameOver" type="AudioStreamPlayer" parent="Player"]
+process_mode = 3
+stream = ExtResource("10_c6i3y")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(800, 29.5)
+shape = SubResource("RectangleShape2D_lgr22")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(800, 973.25)
+shape = SubResource("RectangleShape2D_trn2v")
+
+[node name="UI" type="Control" parent="."]
+z_index = 5
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HealthBar" type="ProgressBar" parent="UI"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 68.0
+grow_horizontal = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_trn2v")
+theme_override_styles/fill = SubResource("StyleBoxFlat_03owx")
+value = 68.35
+show_percentage = false
+
+[node name="ScoreLabel" type="Label" parent="UI/HealthBar"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_lgr22")
+theme_override_font_sizes/font_size = 60
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="GameOver" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("9_03owx")
+
+[node name="Background" type="ColorRect" parent="GameOver"]
+z_index = 10
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.784314)
+
+[node name="GameOverLabel" type="Label" parent="GameOver"]
+z_index = 11
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -387.0
+offset_top = -56.5
+offset_right = 387.0
+offset_bottom = 56.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_lgr22")
+theme_override_font_sizes/font_size = 100
+text = "Game Over!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayAgain" type="Button" parent="GameOver"]
+process_mode = 3
+z_index = 11
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -187.0
+offset_top = 77.0
+offset_right = 183.0
+offset_bottom = 142.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_fonts/font = ExtResource("7_lgr22")
+theme_override_font_sizes/font_size = 50
+text = "Play Again"
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("13_c6i3y")
+autoplay = true
+
+[connection signal="timeout" from="SpawnerTimer" to="." method="_on_spawner_timer_timeout"]
+[connection signal="timeout" from="CoinTimer" to="." method="_on_coin_timer_timeout"]
+[connection signal="pressed" from="GameOver/PlayAgain" to="GameOver" method="_on_play_again_pressed"]
